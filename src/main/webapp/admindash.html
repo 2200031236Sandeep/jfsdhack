@@ -1,0 +1,116 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*" %>
+<%
+    // Database connection setup
+    String dbURL = "jdbc:mysql://localhost:3306/dietpro";
+    String dbUser = "root";
+    String dbPassword = "sandeepsql0674";
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
+
+    int patientCount = 0;
+    int nutritionistCount = 0;
+
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        statement = connection.createStatement();
+
+        // Query to get patient count
+        resultSet = statement.executeQuery("SELECT COUNT(*) AS count FROM patients");
+        if (resultSet.next()) {
+            patientCount = resultSet.getInt("count");
+        }
+
+        // Query to get nutritionist count
+        resultSet = statement.executeQuery("SELECT COUNT(*) AS count FROM nutritionists");
+        if (resultSet.next()) {
+            nutritionistCount = resultSet.getInt("count");
+        }
+    } catch (Exception e) {
+        out.println("<p style='color:red;'>Error: " + e.getMessage() + "</p>");
+    } finally {
+        if (resultSet != null) try { resultSet.close(); } catch (SQLException ignored) {}
+        if (statement != null) try { statement.close(); } catch (SQLException ignored) {}
+        if (connection != null) try { connection.close(); } catch (SQLException ignored) {}
+    }
+%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - DietPro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            text-align: center;
+            padding: 50px;
+        }
+        .option-card {
+            display: inline-block;
+            width: 200px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: 0.3s ease;
+        }
+        .option-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        .option-card h3 {
+            margin: 10px 0;
+        }
+        .option-card a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .option-card a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+    </header>
+    <div class="container">
+        <!-- Patient Count Card -->
+        <div class="option-card">
+            <h3>Patients</h3>
+            <p>Total: <%= patientCount %></p>
+            <a href="viewPatients.jsp">View Patients</a>
+        </div>
+
+        <!-- Nutritionist Count Card -->
+        <div class="option-card">
+            <h3>Nutritionists</h3>
+            <p>Total: <%= nutritionistCount %></p>
+            <a href="viewNutritionists.jsp">View Nutritionists</a>
+        </div>
+    </div>
+    <footer>
+        <p>© 2024 DietPro Admin Dashboard</p>
+    </footer>
+</body>
+</html>
